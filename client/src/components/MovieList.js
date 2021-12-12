@@ -29,7 +29,6 @@ function MovieList() {
                   <td>{genre}</td>
                   <td>{director.name}</td>
                 </tr>
-
                 ))
               }
             </tbody>

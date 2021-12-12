@@ -23,11 +23,11 @@ function CompanyList() {
                 </tr>
               </thead>
               <tbody>{
-                  data.companys.map(({comid, companygroup, companyname, comcode}) => (
-                    <tr key={comid}>
+                  data.companies.map(({id,comid, comgroup, name, comcode}) => (
+                    <tr key={id}>
                       <td>{comid}</td>
-                      <td>{companygroup}</td>
-                      <td>{companyname}</td>
+                      <td>{comgroup}</td>
+                      <td>{name}</td>
                       <td>{comcode}</td>
                   </tr>
                   ))

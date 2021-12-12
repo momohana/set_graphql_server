@@ -4,10 +4,10 @@ import { ApolloProvider } from '@apollo/react-hooks'
 import { Container, Row, Col } from 'reactstrap';
 import Header from './components/Header'
 import SideNav from './components/SideNav'
-import MovieList from './components/MovieList';
+import CompanyList from './components/CompanyList';
 
 const client = new ApolloClient({
-  uri: 'https://localhost:4000/graphql'
+  uri: 'http://localhost:4000/graphql'
 })
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
               <SideNav />
             </Col>
             <Col xs={12} sm={8}>
-              <MovieList />
+              <CompanyList />
             </Col>
           </Row>
         </Container>

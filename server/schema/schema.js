@@ -1,6 +1,7 @@
 const graphql = require('graphql')
 const Movie = require('../models/movie')
 const Director = require('../models/director')
+const Company = require('../models/company')
 const { GraphQLObjectType,
         GraphQLID,
         GraphQLString,
@@ -8,6 +9,18 @@ const { GraphQLObjectType,
         GraphQLList,
         GraphQLNonNull,
         GraphQLSchema } = graphql
+
+
+const CompanyType = new GraphQLObjectType({
+  name: 'Company',
+  fields: () => ({
+    id:{type: GraphQLID},
+    comid:{type: GraphQLString},
+    name: {type: GraphQLString},
+    comgroup: {type: GraphQLString},
+    comcode: {type: GraphQLString}
+  })
+})
 
 const MovieType = new GraphQLObjectType({
   name: 'Movie',
@@ -36,13 +49,19 @@ const DirectorType = new GraphQLObjectType({
         return Movie.find({ directorId: parent.id })
       }
     }
-
   })
 })
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
+    company: {
+      type: CompanyType,
+      args:{id:{type:GraphQLID}},
+      resolve(parent, args){
+        return Company.findById(args.id)
+      }
+    },
     movie: {
       type: MovieType,
       args:{id:{type:GraphQLID}},
@@ -55,6 +74,12 @@ const RootQuery = new GraphQLObjectType({
       args:{id:{type:GraphQLID}},
       resolve(parents, args){
         return Director.findById(args.id)
+      }
+    },
+    companies: {
+      type: new GraphQLList(CompanyType),
+      resolve(parent, args) {
+        return Company.find({})
       }
     },
     movies: {
@@ -75,6 +100,24 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
+    addCompany: {
+      type: CompanyType,
+      args: {
+        comid: {type: GraphQLString},
+        name: {type: GraphQLString},
+        comgroup: {type: GraphQLString},
+        comcode: {type: GraphQLString}
+      },
+      resolve(parents, args) {
+        let company = new Company({
+          comid: args.comid,
+          name: args.name,
+          comgroup: args.comgroup,
+          comcode: args.comcode
+        })
+        return company.save()
+      }
+    },
     addMovie: {
       type: MovieType,
       args: {
@@ -133,6 +176,33 @@ const Mutation = new GraphQLObjectType({
         args.genre && (updateMovie.genre = args.genre)
         args.directorId && (updateMovie.directorId = args.directorId)
         return Movie.findByIdAndUpdate(args.id, updateMovie, {new: true})
+      }
+    },
+    updateCompany: {
+      type: CompanyType,
+      args: {
+        id: {type: GraphQLNonNull(GraphQLID)},
+        comid: {type: GraphQLString},
+        name: {type: GraphQLString},
+        comgroup: {type: GraphQLString},
+        comcode: {type: GraphQLString}
+      },
+      resolve(parent, args) {
+        let updateCompany = {}
+        args.comid && (updateCompany.comid = args.comid)
+        args.name && (updateCompany.name = args.name)
+        args.comgroup && (updateCompany.comgroup = args.comgroup)
+        args.comcode && (updateCompany.comcode = args.comcode)
+        return Company.findByIdAndUpdate(args.id, updateCompany, {new: true})
+      }
+    },
+    deleteCompany: {
+      type: CompanyType,
+      args: {
+        id: {type: GraphQLNonNull(GraphQLID)},
+      },
+      resolve(parent, args) {
+        return Company.findByIdAndRemove(args.id)
       }
     },
     deleteMovie: {
